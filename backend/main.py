@@ -1,11 +1,13 @@
+import secrets
+
 from fastapi import FastAPI, Request, Depends, HTTPException, status
 from database import Base, engine, get_db
 from config import settings
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
-from schemas import RegisterIn, LoginIn, UserOut,QuizCreateIn, QuizEditorOut
-from models import User, Quiz, Question, Answer
+from schemas import RegisterIn, LoginIn, UserOut,QuizCreateIn, QuizEditorOut, QuizStartOut, QuestionsStartOut, AnswersStartOut, AttemptSubmitIn, AnswerPickIn, DashboardOut
+from models import User, Quiz, Question, Answer, Attempt, AnswerAttempt
 import bcrypt
 
 Base.metadata.create_all(bind=engine) #create the tables on startup
@@ -55,10 +57,10 @@ def logout(request:Request):
 #owner check of the quiz dependency-- takes quiz id from route and checks if the quiz linked to that id is owned by the user trying to access it
 def check_quiz_owner(quiz_id:int ,user: User = Depends(get_curr_user), db: Session = Depends(get_db)):
     quiz = db.scalar(select(Quiz).where(Quiz.id == quiz_id))
-    if quiz.owner_id != user.id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are not the owner of this quiz.")
     if not quiz:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No quizzes for this user.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Quiz not found.")
+    if quiz.owner_id != user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not the owner of this quiz.")
     return quiz
 
 #endpoint to get quizzes created by current user
@@ -108,8 +110,70 @@ def deleteQuiz(quiz: Quiz = Depends(check_quiz_owner), db: Session = Depends(get
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Can not delete quiz after publishing")
     db.delete(quiz)
     db.commit()
+#**Endpoints for PUBLISHING and USERS TAKING the quiz
 
-    
-
-
-
+#Owner publishing a quiz-- must have at least 1 question, 2 answer options per question, and only one correct answer marked per question
+@app.post('/api/quizzes/{quiz_id}/publish', response_model=QuizEditorOut)
+def publishQuiz(quiz: Quiz = Depends(check_quiz_owner), db: Session = Depends(get_db)):
+    if quiz.isPublished:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Quiz already published.")
+    if len(quiz.questions) < 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Need at least 1 question to publish a quiz.")
+    for q in quiz.questions:
+        if len(q.answers) < 2:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Each question needs at least 2 answer options.")
+        numCorrectAnswers=0
+        for a in q.answers:
+            if a.isCorrect: numCorrectAnswers+=1
+        if numCorrectAnswers != 1:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Each question must have only 1 correct answer.")
+    quiz.isPublished = True
+    quiz.share_link = secrets.token_urlsafe(8)
+    db.commit()
+    db.refresh(quiz)
+    return quiz
+#takable quiz dependency to check the link the user clicked is valid and the quiz is published
+def takableQuiz(link:str, db:Session = Depends(get_db)) -> Quiz:
+    quiz = db.scalar(select(Quiz).where(Quiz.share_link == link))
+    if quiz is None or not quiz.isPublished:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Quiz not found.")
+    return quiz
+#route checks that the display name being entered has not been used before to keep them unique for no confusion later on
+@app.get('/api/quizzes/take/{link}/check-name')
+def checkName(display_name: str, quiz: Quiz = Depends(takableQuiz), db: Session = Depends(get_db)):
+    usersWithSameName = db.scalar(select(Attempt).where(Attempt.quiz_id == quiz.id,Attempt.display_name == display_name))
+    if usersWithSameName is not None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Display name already in use, choose a different one.")
+    return {"available": True}
+#user taking the quiz via the link after clicking start, we are sending the quiz data so frontend can build the quiz up for the user
+@app.get('/api/quizzes/{link}/start-quiz', response_model=QuizStartOut)
+def startQuiz(quiz: Quiz = Depends(takableQuiz)):
+    return quiz
+#user submits a quiz to the backend, not calculating score yet just creating in the db
+@app.post('/api/quizzes/{link}/submit')
+def submitQuiz(body: AttemptSubmitIn, db: Session = Depends(get_db), quiz: Quiz = Depends(takableQuiz)):
+    attempt = Attempt(quiz_id=quiz.id, display_name=body.display_name)
+    score = 0
+    for choice in body.picks:
+        #check if question id is valid and answer id is from the question we found
+        question = next((q for q in quiz.questions if q.id == choice.question_id),None)
+        if question is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid question, question id does not exist for the quiz")
+        answer = next((a for a in question.answers if a.id == choice.answer_id),None)
+        if answer is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Answer does not exist in the question")
+        if answer.isCorrect:
+            score += 1
+        attempt.answers.append(AnswerAttempt(question_id=choice.question_id, answer_id=choice.answer_id, attempt_id=attempt.id))
+    attempt.score = score
+    db.add(attempt)
+    db.commit()
+    db.refresh(attempt)
+    return {"Status": "Submitted"}
+#*Endpoint for the dashboard creation, frontend fetches this and uses the data to build the leaderboard
+@app.get('/api/quizzes/{quiz_id}/dashboard', response_model=list[DashboardOut])
+def getDashboard(quiz: Quiz = Depends(check_quiz_owner), db: Session = Depends(get_db)):
+    total = len(quiz.questions)
+    attempts = db.scalars(select(Attempt).where(Attempt.quiz_id == quiz.id).order_by(Attempt.score.desc()))
+    result = [DashboardOut(score=a.score, display_name=a.display_name, total=total) for a in attempts]
+    return result

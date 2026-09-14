@@ -51,6 +51,7 @@ class QuizEditorOut(BaseModel):
     questions: list[QuestionsOut]
     description: str
     isPublished: bool
+    share_link: str | None
     model_config = ConfigDict(from_attributes=True)
 #for taking in answer data for each question
 class AnswerIn(BaseModel):
@@ -65,6 +66,39 @@ class QuizCreateIn(BaseModel):
     title: str
     description: str
     questions: list[QuestionIn]
+#**Schema for the data being sent to the USER, more secure. This is for after they click start after their username is approved
+class AnswersStartOut(BaseModel):
+    id: int
+    text: str
+    orderIndex: int
+    model_config = ConfigDict(from_attributes=True)
+class QuestionsStartOut(BaseModel):
+    id: int
+    prompt: str
+    answers: list[AnswersStartOut]
+    orderIndex: int
+    model_config = ConfigDict(from_attributes=True)
+class QuizStartOut(BaseModel):
+    title: str
+    questions: list[QuestionsStartOut]
+    description: str
+    model_config = ConfigDict(from_attributes=True)
+#* schema for data being sent to backend from user after they submit a quiz
+class AnswerPickIn(BaseModel):
+    question_id: int
+    answer_id: int
+
+class AttemptSubmitIn(BaseModel):
+    display_name: str
+    picks: list[AnswerPickIn]
+
+#**schema for data being sent to the frontend for the dashboard to be made
+class DashboardOut(BaseModel):
+    score: int
+    display_name: str
+    total: int
+    model_config = ConfigDict(from_attributes=True)
+
 
 
 

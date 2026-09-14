@@ -12,7 +12,6 @@ class User(Base):
     password_hash: Mapped[str] 
     display_name: Mapped[str]
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
-    owned_quiz: Mapped[bool] = mapped_column(default=False)
     quizzes = relationship("Quiz")
 
 ## models for the quizzes (quiz, questions, answers)
@@ -26,6 +25,7 @@ class Quiz(Base):
     description: Mapped[str]
     isPublished: Mapped[bool] = mapped_column(default=False)
     share_link: Mapped[str | None]
+    attempts = relationship("Attempt", cascade="all, delete-orphan")
 class Question(Base):
     __tablename__ = "questions"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -41,6 +41,23 @@ class Answer(Base):
     question_id: Mapped[int] = mapped_column(ForeignKey("questions.id"))
     isCorrect: Mapped[bool] = mapped_column(default=False)
     orderIndex: Mapped[int] = mapped_column(default=0, nullable=False)
+#** tables to store the taker data(Attempt per user and each users answer per question)
+class Attempt(Base):
+    __tablename__ = "attempts"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    quiz_id: Mapped[int] = mapped_column(ForeignKey("quizzes.id"))
+    display_name:Mapped[str] = mapped_column(nullable=False)
+    score: Mapped[int]
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
+    answers = relationship("AnswerAttempt", cascade="all, delete-orphan")
+class AnswerAttempt(Base):
+    __tablename__ = "userAnswers"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    question_id: Mapped[int] = mapped_column(ForeignKey("questions.id"))
+    answer_id: Mapped[int] = mapped_column(ForeignKey("answers.id"))
+    attempt_id: Mapped[int] = mapped_column(ForeignKey("attempts.id"))
+
+
 
 
 
