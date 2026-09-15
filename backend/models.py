@@ -48,6 +48,7 @@ class Attempt(Base):
     quiz_id: Mapped[int] = mapped_column(ForeignKey("quizzes.id"))
     display_name:Mapped[str] = mapped_column(nullable=False)
     score: Mapped[int]
+    percentage_right: Mapped[int]
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
     answers = relationship("AnswerAttempt", cascade="all, delete-orphan")
 class AnswerAttempt(Base):
