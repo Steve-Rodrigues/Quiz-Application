@@ -9,11 +9,19 @@ from starlette.middleware.sessions import SessionMiddleware
 from schemas import RegisterIn, LoginIn, UserOut,QuizCreateIn, QuizEditorOut, QuizStartOut, QuestionsStartOut, AnswersStartOut, AttemptSubmitIn, AnswerPickIn, DashboardOut
 from models import User, Quiz, Question, Answer, Attempt, AnswerAttempt
 import bcrypt
+from fastapi.middleware.cors import CORSMiddleware
 
 Base.metadata.create_all(bind=engine) #create the tables on startup
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=settings.session_secret) #the session middleware to check the sessions using the secret comparing to signature passed thorugh the header
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 #sign up route
 @app.post('/api/auth/signup', response_model=UserOut)
@@ -154,26 +162,36 @@ def startQuiz(quiz: Quiz = Depends(takableQuiz)):
 def submitQuiz(body: AttemptSubmitIn, db: Session = Depends(get_db), quiz: Quiz = Depends(takableQuiz)):
     attempt = Attempt(quiz_id=quiz.id, display_name=body.display_name)
     score = 0
+    answeredQuestions = set() #one pick per question -- without this a taker could send the same correct answer repeatedly and score higher than the quiz is out of
     for choice in body.picks:
         #check if question id is valid and answer id is from the question we found
         question = next((q for q in quiz.questions if q.id == choice.question_id),None)
         if question is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid question, question id does not exist for the quiz")
+        if question.id in answeredQuestions:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only one answer allowed per question.")
+        answeredQuestions.add(question.id)
         answer = next((a for a in question.answers if a.id == choice.answer_id),None)
         if answer is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Answer does not exist in the question")
         if answer.isCorrect:
             score += 1
-        attempt.answers.append(AnswerAttempt(question_id=choice.question_id, answer_id=choice.answer_id, attempt_id=attempt.id))
+        attempt.answers.append(AnswerAttempt(question_id=choice.question_id, answer_id=choice.answer_id))
+    total = len(quiz.questions)
     attempt.score = score
+    attempt.percentage_right = round(score / total * 100) if total else 0
     db.add(attempt)
     db.commit()
     db.refresh(attempt)
     return {"Status": "Submitted"}
 #*Endpoint for the dashboard creation, frontend fetches this and uses the data to build the leaderboard
 @app.get('/api/quizzes/{quiz_id}/dashboard', response_model=list[DashboardOut])
-def getDashboard(quiz: Quiz = Depends(check_quiz_owner), db: Session = Depends(get_db)):
-    total = len(quiz.questions)
+def getDashboard(quiz: Quiz = Depends(check_quiz_owner), db:Session = Depends(get_db)):
     attempts = db.scalars(select(Attempt).where(Attempt.quiz_id == quiz.id).order_by(Attempt.score.desc()))
+    total = len(quiz.questions)
     result = [DashboardOut(score=a.score, display_name=a.display_name, total=total) for a in attempts]
     return result
+
+
+
+
