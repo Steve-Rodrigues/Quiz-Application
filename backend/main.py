@@ -183,7 +183,7 @@ def submitQuiz(body: AttemptSubmitIn, db: Session = Depends(get_db), quiz: Quiz 
     db.add(attempt)
     db.commit()
     db.refresh(attempt)
-    return {"Status": "Submitted"}
+    return {"score": score, "total": total, "percentage_right": attempt.percentage_right}
 #*Endpoint for the dashboard creation, frontend fetches this and uses the data to build the leaderboard
 @app.get('/api/quizzes/{quiz_id}/dashboard', response_model=list[DashboardOut])
 def getDashboard(quiz: Quiz = Depends(check_quiz_owner), db:Session = Depends(get_db)):
