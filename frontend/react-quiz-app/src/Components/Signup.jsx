@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { fetchApi } from '../api.js'
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 export function Signup(){
     const [email, setEmail] = useState('');
     const [displayName, setDisplayName] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-
+    const nav = useNavigate();
     async function handleSubmit(e){
         e.preventDefault();
         try{
@@ -17,6 +17,7 @@ export function Signup(){
             },
             body: JSON.stringify({email, display_name: displayName, password})
         });
+        nav('/login');
     }catch(err){
         setError(err.message);
     }
