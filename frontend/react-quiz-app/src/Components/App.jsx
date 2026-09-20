@@ -3,7 +3,7 @@ import { Login } from './Login.jsx'
 import { Signup } from './Signup.jsx'
 import { NotFound } from './NotFound.jsx'
 import { MyQuizzes } from './MyQuizzes.jsx'
-import { CreateQuiz } from './CreateQuiz.jsx'
+import { CreateQuizzes } from './CreateQuiz.jsx'
 import { EditQuiz } from './EditQuiz.jsx'
 import { QuizDashboard } from './QuizDashboard.jsx'
 import { TakeQuiz } from './TakeQuiz.jsx'
@@ -14,10 +14,10 @@ function App() {
   return(
     <>
     <Routes>
-      <Route path='/' element={<Login/>}/>
+      <Route path='/' element={<Signup/>}/>
       <Route element={<OwnerLayout/>}>
       <Route path='/quizzes' element={<MyQuizzes/>}/>
-      <Route path='/quizzes/new' element={<CreateQuiz/>}/>
+      <Route path='/quizzes/new' element={<CreateQuizzes/>}/>
       <Route path='/quizzes/:quizId/edit' element={<EditQuiz/>}/>
       <Route path='/quizzes/:quizId/dashboard' element={<QuizDashboard/>}/>
       </Route>
