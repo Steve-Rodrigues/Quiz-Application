@@ -1,0 +1,264 @@
+:root{
+    --primary: #106B5C;
+    --primary-dark: #0B4F44;
+    --accent: #E8A33D;
+    --background: #F6F5F1;
+    --surface: #FFFFFF;
+    --text: #1C1F1C;
+    --muted: #6B6F68;
+    --form-width: 340px;
+}
+/* padding/border count inside the declared width, so a 100% input and a
+   100% button end up the same size instead of the input being 24px wider */
+*, *::before, *::after{
+    box-sizing: border-box;
+}
+.heroContainer{
+    display: flex;
+    height: 100vh;
+}
+.rightHero, .leftHero{
+    width: 50%;
+    height: 100%;
+    padding: 50px;
+}
+.rightHero{
+    background-color: var(--surface);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+.leftHero{
+    background-color: var(--primary);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+.quizContain{
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    font: 550 15px sans-serif;
+    color: var(--surface);
+}
+/* the login card sits on white, so the wordmark needs a dark colour */
+.quizContain.login{
+    color: var(--primary-dark);
+}
+.quizContain.login .white-square{
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: var(--surface);
+}
+.white-square{
+    height:30px;
+    width: 30px;
+    border: 1px solid var(--background);
+    border-radius: 10px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 550 15px sans-serif;
+    color: var(--primary-dark)
+}
+h1{
+    font: 700 30px sans-serif;
+}
+.leftHero h1{
+    color: var(--surface);
+}
+p{
+    font: 400 13px sans-serif;
+}
+.leftHero p{
+    color:rgba(246, 245, 241,0.7);
+}
+ul{
+    list-style: none;
+    padding:0;
+
+}
+li{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    font: 400 13px sans-serif;
+    color: var(--background);
+}
+input[type='checkbox']{
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: var(--background);
+    background-color: var(--accent);
+}
+h2{
+    font: 600 24px sans-serif;
+    color: var(--text);
+}
+.label{
+    font: 600 13px sans-serif;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+button{
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--surface);
+    font: 550 14px sans-serif;
+    color: var(--background);
+    background-color: var(--primary-dark);
+    width: 100%;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.text-muted{
+    font: 500 13px sans-serif;
+    color: var(--muted);
+}
+input{
+    padding: 10px 12px;
+    font: 500 15px sans-serif;
+    border-radius: 10px;
+    border: 1px solid rgb(217, 210, 210);
+    width: 100%;
+}
+/* one place decides the form width; everything inside is 100% of it */
+.form-inputs{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    max-width: var(--form-width);
+}
+.field{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.field p{
+    margin: 0 0 6px 0;
+}
+.link-inline{
+    text-decoration: none;
+    color: var(--primary);
+    font: 550 13px sans-serif;
+}
+.link-inline-nav{
+    text-decoration: none;
+    color: var(--surface);
+    font: 550 13px sans-serif;
+    border: 1px solid var(--primary);
+    border-radius: 6px;
+    padding: 6px 8px;
+    background-color: var(--primary-dark);
+}
+.login-bottom{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: var(--form-width);
+}
+
+.loginContainer{
+    width: 100%;
+    max-width: 420px;
+    margin: 8vh auto;
+    border: 1px solid rgb(210, 201, 201);
+    background-color: var(--surface);
+    padding: 40px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.loginContainer h2{
+    margin-bottom: 4px;
+}
+.loginContainer form{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+body{
+    background-color: var(--background);
+    margin: 0;
+}
+.user-circle{
+    width: 30px;
+    height: 30px;
+    background-color: var(--primary-dark);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font: 530 15px sans-serif;
+    color: var(--surface);
+}
+.nav{
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--surface);
+    padding: 20px;
+}
+.nav-user-space{
+    display: flex;
+    gap: 10px;
+}
+.quiz-card{
+    border-radius: 12px;
+    border: 1px solid rgb(214, 207, 207);
+    background-color: var(--surface);
+    width: 30vh;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.quiz-card h2,p{
+    margin: 0;
+}
+.draft-circle, .publish-cirlce{
+    border: 1px solid rgb(237, 231, 231);
+    width: 70px;
+    border-radius: 13px;
+    padding: 1px;
+    display: flex;
+    justify-content: center;
+}
+.draft-circle{
+    background-color: rgba(128, 128, 128,0.1);
+    color:  rgb(80, 76, 76);
+    font: 550 13px sans-serif;
+}
+.publish-circle{
+    background-color: rgba(232, 163, 61,0.3);
+    color: rgb(235, 154, 33);
+    font: 550 13px sans-serif;
+}
+.quizzes-container{
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+}
+.quiz-card-cont{
+    display: flex;
+    gap: 20px;
+    flex: 1;
+}
+.create-Container{
+    display: flex;
+    border: 1px solid black;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}

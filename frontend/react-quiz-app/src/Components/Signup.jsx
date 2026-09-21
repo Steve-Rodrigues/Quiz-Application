@@ -25,18 +25,42 @@ export function Signup(){
     return(
         <>
         {error && <p>{error}</p>}
-        <h1>Register</h1>
+        <div className='heroContainer'>
+        <div className='leftHero'>
+            <div className='quizContain'><div className='white-square'>Q</div> Quiz Builder</div>
+            <h1>Build quizzes people actually want to take.</h1>
+            <p>Create, share, and track results in minutes -- no setup required.</p>
+            <ul>
+                <li><input type="checkbox"/>Build a quiz in minutes</li>
+                <li><input type="checkbox"/>Share with a single link</li>
+                <li><input type="checkbox"/>See live results as they come in</li>
+            </ul>
+        </div>
+        <div className='rightHero'>
         <form onSubmit={handleSubmit}>
-            <p>Display Name</p>
-            <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)}/>
-            <p>Email</p>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
-            <p>Password</p>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+            <h2>Create your account</h2>
+            <p className='text-muted'>Start building your first quiz</p>
+            <div className='form-inputs'>
+            <div className='field'>
+                <p className='label'>Display Name</p>
+                <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder='Joe Connor'/>
+            </div>
+            <div className='field'>
+                <p className='label'>Email</p>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='you@example.com'/>
+            </div>
+            <div className='field'>
+                <p className='label'>Password</p>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+            </div>
             <button type="submit">Create Account</button>
+            </div>
         </form>
-        <h3>Or if already have account go to login</h3>
-        <Link to='/login'>Login</Link>
+        <div className='login-bottom'>
+        <p className='text-muted'>Already have an account? <Link to='/login' className='link-inline'>Log in</Link> </p>
+        </div>
+        </div>
+        </div>
         </>
     );
 }

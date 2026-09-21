@@ -14,12 +14,13 @@ export function OwnerLayout(){
     }
         return(
             <>
-            <nav>
-                <p>Hello, {user.display_name}</p>
-                <div>
-                    <Link to='/quizzes/new'>Create Quiz</Link>
+            <div className='nav'>
+                <div className='quizContain login'><div className='white-square'>Q</div> Quiz Builder</div>
+                <div className='nav-user-space'>
+                    <Link to='/quizzes/new' className="link-inline-nav">+ New Quiz</Link>
+                    <div className="user-circle">{user.display_name[0]}</div>
                 </div>
-            </nav>
+            </div>
             <Outlet/>
             </>
         );

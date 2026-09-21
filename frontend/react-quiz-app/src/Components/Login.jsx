@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { fetchApi } from '../api.js'
 import { useAuth } from './AuthContext.jsx'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export function Login(){
     const {login} = useAuth(); //all the context needed for login
@@ -30,13 +30,27 @@ export function Login(){
     return(
         <>
         {error && <p>Login attempt failed</p>}
+        <div className='loginContainer'>
+        <div className='quizContain login'><div className='white-square'>Q</div> Quiz Builder</div>
+        <h2>Welcome back</h2>
+        <p className='text-muted'>Log in to manage your quizzes</p>
         <form onSubmit={handleSubmit}>
-            <p>Username</p>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}/><br></br>
-            <p>Password</p>
+            <div className='form-inputs'>
+                <div className='field'>
+            <p className='label'>Email</p>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='you@example.com'/>
+            </div>
+            <div className='field'>
+            <p className='label'>Password</p>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+            </div>
             <button type="submit">Log In</button>
+            <div className='login-bottom'>
+                <p className='text-muted'>Don't have an account? <Link to='/signup' className='link-inline'>Sign up</Link></p>
+            </div>
+            </div>
         </form>
+        </div>
         </>
     );
 }

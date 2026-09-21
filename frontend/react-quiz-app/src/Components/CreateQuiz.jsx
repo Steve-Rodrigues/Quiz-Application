@@ -72,14 +72,16 @@ export function CreateQuizzes(){
     }
     return(
         <>
+        <div className="create-Container">
         <form onSubmit={handleSubmit}>
             {error && <p>{error}</p>}
-            <label>Title</label>
+            <label>Quiz Title</label>
             <input type="text" value={title} onChange={handleTitleChange} />
 
             <label>Description</label>
             <textarea value={description} onChange={handleDescChange} />
-
+            <label>Questions</label>
+            <div className="questions-container">
             {questions.map(q => (
                 <div key={q.id}>
                     <input type="text" placeholder="Question Prompt" value={q.prompt}
@@ -94,9 +96,11 @@ export function CreateQuizzes(){
                     <button type="button" onClick={() => addAnswer(q.id)}>Add Answer</button>
                 </div>
             ))}
+            </div>
             <button type="button" onClick={addQuestion}>Add Question</button>
             <button type="submit">Create Quiz</button>
         </form>
+        </div>
         </>
     )
 }
