@@ -6,7 +6,7 @@ from config import settings
 class Base(DeclarativeBase):
     pass
 
-engine = create_engine(url=settings.database_url, connect_args={"check_same_thread": False})
+engine = create_engine(url=settings.database_url)
 sessionLocal = sessionmaker(bind=engine)
 #dependency to access the db inside the endpoints
 def get_db():
