@@ -23,6 +23,12 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+#health check -- render pings this to confirm the service is up. it probes with HEAD,
+#which fastapi doesn't add to a plain @app.get, so both methods are registered
+@app.api_route('/', methods=['GET', 'HEAD'])
+def health():
+    return {"status": "ok"}
+
 #sign up route
 @app.post('/api/auth/signup', response_model=UserOut)
 def signUp(registerInfo: RegisterIn, db: Session = Depends(get_db)):
