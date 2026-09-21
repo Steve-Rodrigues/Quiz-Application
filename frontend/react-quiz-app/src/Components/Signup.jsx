@@ -31,9 +31,9 @@ export function Signup(){
             <h1>Build quizzes people actually want to take.</h1>
             <p>Create, share, and track results in minutes -- no setup required.</p>
             <ul>
-                <li><input type="checkbox"/>Build a quiz in minutes</li>
-                <li><input type="checkbox"/>Share with a single link</li>
-                <li><input type="checkbox"/>See live results as they come in</li>
+                <li><input type="checkbox" className="signup"/>Build a quiz in minutes</li>
+                <li><input type="checkbox" className="signup"/>Share with a single link</li>
+                <li><input type="checkbox" className="signup"/>See live results as they come in</li>
             </ul>
         </div>
         <div className='rightHero'>

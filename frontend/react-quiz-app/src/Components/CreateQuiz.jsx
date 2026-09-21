@@ -70,34 +70,59 @@ export function CreateQuizzes(){
             obj.id == qid ? {...obj, answers:[...obj.answers,{id: crypto.randomUUID(),text:'',isCorrect:false} ]}: obj
         )));
     }
+    //questions and answers only live in local state until save, so removing one here is
+    //enough-- PATCH clears and rebuilds the whole list from what gets sent
+    function removeQuestion(qid){
+        const target = questions.find(q => q.id === qid);
+        //only worth a confirm once something has actually been typed into it
+        const hasContent = target && (target.prompt.trim() || target.answers.some(a => a.text.trim()));
+        if(hasContent && !window.confirm('Remove this question and its answers?')) return;
+        setQuestions(q => q.filter(obj => obj.id !== qid));
+    }
+    function removeAnswer(qid, aid){
+        setQuestions(q => q.map(obj => (
+            obj.id === qid ? {...obj, answers: obj.answers.filter(a => a.id !== aid)} : obj
+        )));
+    }
     return(
         <>
         <div className="create-Container">
         <form onSubmit={handleSubmit}>
             {error && <p>{error}</p>}
             <label>Quiz Title</label>
-            <input type="text" value={title} onChange={handleTitleChange} />
+            <input className="title-input" type="text" value={title} onChange={handleTitleChange} />
 
             <label>Description</label>
             <textarea value={description} onChange={handleDescChange} />
-            <label>Questions</label>
+            <div className='line-seperate'></div>
+            <h2 className='createHeader'>Questions</h2>
             <div className="questions-container">
-            {questions.map(q => (
-                <div key={q.id}>
+            {questions.map((q, index) => (
+                <div key={q.id} className="question">
+                    <div className="question-head">
+                        <label className='questionNum'>Question {index + 1}</label>
+                        <button type="button" className="remove-question"
+                            onClick={() => removeQuestion(q.id)}>Remove</button>
+                    </div>
                     <input type="text" placeholder="Question Prompt" value={q.prompt}
                         onChange={(e) => handlePrompt(q.id, e)} />
+                    <div className="questionsWrapped">
                     {q.answers.map(a => (
-                        <div key={a.id}>
+                        <div key={a.id} className="answerInput">
                             <input type="text" value={a.text} placeholder="Answer Text"
                                 onChange={(e) => updateAnswerText(q.id, a.id, e)} />
-                            <input type="checkbox" onChange={() => toggleCorrect(q.id, a.id)}/>
+                            <input type="checkbox" className="quizCheck" checked={a.isCorrect}
+                                onChange={() => toggleCorrect(q.id, a.id)}/>
+                            <button type="button" className="remove-answer"
+                                aria-label="Remove answer"
+                                onClick={() => removeAnswer(q.id, a.id)}>&times;</button>
                         </div>
-                    ))}
-                    <button type="button" onClick={() => addAnswer(q.id)}>Add Answer</button>
+                    ))}</div>
+                    <button type="button" onClick={() => addAnswer(q.id)} className="answer-btn">+ Add Answer</button>
                 </div>
             ))}
             </div>
-            <button type="button" onClick={addQuestion}>Add Question</button>
+            <button className="add-question" type="button" onClick={addQuestion}>+ Add Question</button>
             <button type="submit">Create Quiz</button>
         </form>
         </div>

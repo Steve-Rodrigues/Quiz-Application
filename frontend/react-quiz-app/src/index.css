@@ -91,7 +91,7 @@ li{
     font: 400 13px sans-serif;
     color: var(--background);
 }
-input[type='checkbox']{
+input[type='checkbox'].signup{
     appearance: none;
     width: 15px;
     height: 15px;
@@ -101,6 +101,11 @@ input[type='checkbox']{
 }
 h2{
     font: 600 24px sans-serif;
+    color: var(--text);
+}
+h2.createHeader{
+    margin:0;
+    font: 600 18px sans-serif;
     color: var(--text);
 }
 .label{
@@ -212,22 +217,57 @@ body{
 }
 .nav-user-space{
     display: flex;
+    align-items: center;
     gap: 10px;
+}
+/* the shared button is full width for forms-- in the nav it has to sit to its own size */
+button.nav-btn{
+    width: auto;
+    margin-top: 0;
+    padding: 6px 10px;
+    font: 550 13px sans-serif;
+    border: 1px solid var(--primary);
+    border-radius: 6px;
+    color: var(--surface);
+    background-color: var(--primary-dark);
+}
+button.nav-btn:disabled{
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 .quiz-card{
     border-radius: 12px;
     border: 1px solid rgb(214, 207, 207);
     background-color: var(--surface);
-    width: 30vh;
+    /* a floor so the title has room to sit in the middle and the footer has a
+       bottom to sit against, whatever the description length */
+    min-height: 210px;
     padding: 15px;
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
+/* takes the leftover height so the title centres and the footer is pushed down */
+.quiz-card-body{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+.quiz-card-footer{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+}
 .quiz-card h2,p{
     margin: 0;
 }
-.draft-circle, .publish-cirlce{
+.draft-circle, .publish-circle{
     border: 1px solid rgb(237, 231, 231);
     width: 70px;
     border-radius: 13px;
@@ -250,15 +290,398 @@ body{
     flex-direction: column;
     padding: 30px;
 }
+/* auto-fill rather than auto-fit: with only one or two quizzes auto-fit would
+   stretch them across the whole row, so they keep their column width instead */
 .quiz-card-cont{
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 20px;
-    flex: 1;
 }
 .create-Container{
     display: flex;
-    border: 1px solid black;
     justify-content: center;
     align-items: center;
+    padding: 30px 20px;
+
+}
+
+.question{
+    display: flex;
+    flex-direction: column;
     gap: 20px;
+    padding: 25px;
+    border: 1px solid rgb(222, 214, 214);
+    background-color: var(--surface);
+    border-radius: 14px;
+    align-items: stretch;
+    margin: 15px;
+    transition: 0.3s ease;
+}
+.question:hover{
+    box-shadow: 0 0 8px rgb(180, 176, 176);
+    transform:translateY(-6px);
+}
+.questionsWrapped{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+input.quizCheck{
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: var(--background);
+    background-color: var(--accent);
+    cursor: pointer;
+}
+
+.answerInput{
+   display: flex;
+   align-items: center;
+   gap: 10px;
+}
+/* puts the question number and its Remove button on one line */
+.question-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+button.remove-question{
+    width: auto;
+    margin-top: 0;
+    padding: 6px 10px;
+    font: 550 13px sans-serif;
+    color: #B3261E;
+    background-color: var(--surface);
+    border: 1px solid #B3261E;
+    border-radius: 8px;
+}
+/* square so the x sits centred, and sized to line up with the checkbox next to it */
+button.remove-answer{
+    width: 25px;
+    height: 25px;
+    flex: none;
+    margin-top: 0;
+    padding: 0;
+    font: 550 18px sans-serif;
+    line-height: 1;
+    color: var(--muted);
+    background-color: var(--surface);
+    border: 1px solid rgb(217, 210, 210);
+    border-radius: 50%;
+}
+button.remove-answer:hover{
+    color: #B3261E;
+    border-color: #B3261E;
+}
+button.answer-btn{
+    font: 550 14px sans-serif;
+    color: var(--primary);
+    background-color: var(--surface);
+    cursor: pointer;
+    width: 25vh;
+    margin:0;
+}
+button.add-question{
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px dashed var(--primary);
+    font: 550 14px sans-serif;
+    color: var(--primary);
+    background-color: var(--background);
+    width: 100%;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.line-seperate{
+    width: 100vh;
+    height: 1px;
+    border: 1px solid rgb(225, 220, 220);
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+label{
+    font: 600 16px sans-serif;
+    color: var(--muted);
+}
+input.title-input{
+    font: 600 20px sans-serif;
+    color: var(--text);
+    margin-top: 10px;
+}
+textarea{
+    padding: 10px 12px;
+    font: 500 15px sans-serif;
+    border-radius: 10px;
+    border: 1px solid rgb(217, 210, 210);
+    width: 100%;
+    margin-top: 10px;
+}
+/* publishing is one way, so it reads as the secondary action next to Save Changes */
+button.publish-btn{
+    background-color: var(--accent);
+    color: var(--text);
+    border: 1px solid var(--accent);
+}
+button.publish-btn:disabled{
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+/* only shown when the clipboard write fails, so the url can be copied by hand */
+input.share-input{
+    width: 100%;
+    min-width: 0;
+    font: 500 13px sans-serif;
+    color: var(--muted);
+    background-color: var(--background);
+}
+button.copy-btn, button.delete-btn{
+    width: auto;
+    flex: none;
+    margin-top: 0;
+    padding: 10px 12px;
+    font: 550 13px sans-serif;
+}
+/* the card's Edit/Quiz Results link, outlined to match .delete-btn beside it.
+   it is an <a>, so the sizing the button base rule gives .delete-btn is repeated here */
+.card-link{
+    text-decoration: none;
+    font: 550 13px sans-serif;
+    padding: 10px 12px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    color: var(--primary);
+    background-color: var(--surface);
+    border: 1px solid var(--primary);
+}
+/* outlined rather than filled so deleting never looks like the main action on the card */
+button.delete-btn{
+    color: #B3261E;
+    background-color: var(--surface);
+    border: 1px solid #B3261E;
+}
+button.delete-btn:disabled{
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.form-error{
+    font: 500 13px sans-serif;
+    color: #B3261E;
+    margin: 10px 0 0 0;
+}
+ul.form-error{
+    padding-left: 18px;
+}
+
+/* ***** the public take-a-quiz pages ***** */
+.take-container{
+    display: flex;
+    justify-content: center;
+    padding: 30px 20px;
+}
+/* the name gate, the result and the 404 all share the centred card the login page uses */
+.take-card, .notfound-card{
+    width: 100%;
+    max-width: 420px;
+    margin: 8vh auto;
+    border: 1px solid rgb(210, 201, 201);
+    background-color: var(--surface);
+    padding: 40px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+.take-form{
+    width: 100%;
+    max-width: 640px;
+}
+.take-head{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.take-head h1{
+    margin: 0;
+}
+.take-progress{
+    font: 550 13px sans-serif;
+    color: var(--primary);
+}
+.take-prompt{
+    font: 550 16px sans-serif;
+    color: var(--text);
+}
+/* the label is the whole clickable row, so it carries the border and the picked state */
+.take-answer{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid rgb(217, 210, 210);
+    border-radius: 10px;
+    background-color: var(--surface);
+    font: 500 15px sans-serif;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+.take-answer:hover{
+    border-color: var(--primary);
+}
+.take-answer.picked{
+    border-color: var(--primary);
+    background-color: #E8F1EF;
+    font-weight: 600;
+}
+.take-answer input[type="radio"]{
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    flex: none;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+.result-score{
+    font: 700 40px sans-serif;
+    color: var(--primary);
+    margin: 10px 0 0 0;
+}
+.result-percent{
+    font: 600 18px sans-serif;
+    color: var(--text);
+    margin: 0 0 10px 0;
+}
+
+/* ***** owner's results dashboard ***** */
+.dash-container{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px;
+}
+.dash-head h1{
+    margin: 0 0 4px 0;
+}
+/* same auto-fill grid as the quiz cards, so the three stats drop to one column on a phone */
+.stat-cards{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+.stat-card{
+    border: 1px solid rgb(214, 207, 207);
+    background-color: var(--surface);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.stat-label{
+    font: 600 13px sans-serif;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin: 0;
+}
+.stat-value{
+    font: 700 28px sans-serif;
+    color: var(--primary);
+    margin: 0;
+}
+table.leaderboard{
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--surface);
+    border: 1px solid rgb(214, 207, 207);
+    border-radius: 12px;
+    overflow: hidden;
+}
+table.leaderboard th{
+    text-align: left;
+    font: 600 13px sans-serif;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 12px 16px;
+    background-color: var(--background);
+    border-bottom: 1px solid rgb(225, 220, 220);
+}
+table.leaderboard td{
+    font: 500 15px sans-serif;
+    color: var(--text);
+    padding: 12px 16px;
+    border-bottom: 1px solid rgb(235, 231, 231);
+}
+table.leaderboard tbody tr:last-child td{
+    border-bottom: none;
+}
+/* whoever is on top score gets picked out, ties included */
+table.leaderboard tr.leader-row td{
+    font-weight: 700;
+    background-color: #E8F1EF;
+}
+
+/* ***** 404 ***** */
+.notfound-card{
+    text-align: center;
+    gap: 10px;
+}
+.notfound-code{
+    font: 700 56px sans-serif;
+    color: var(--primary);
+    margin: 10px 0 0 0;
+    line-height: 1;
+}
+.notfound-card .text-muted{
+    margin: 0 0 6px 0;
+}
+
+/* ***** shared loading spinner ***** */
+.loading{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    /* enough height that the page does not jump when the content lands */
+    min-height: 40vh;
+}
+.spinner{
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 3px solid rgb(225, 220, 220);
+    border-top-color: var(--primary);
+    animation: spin 0.7s linear infinite;
+}
+@keyframes spin{
+    to { transform: rotate(360deg); }
+}
+/* a spinning ring is exactly the kind of motion this setting is meant to stop */
+@media (prefers-reduced-motion: reduce){
+    .spinner{
+        animation: none;
+        border-top-color: rgb(225, 220, 220);
+        opacity: 0.6;
+    }
+}
+
+/* quiet text button-- logging out should not compete with New Quiz or Publish */
+button.logout-btn{
+    width: auto;
+    margin-top: 0;
+    padding: 6px 10px;
+    font: 550 13px sans-serif;
+    color: var(--muted);
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+}
+button.logout-btn:hover{
+    color: var(--text);
+    border-color: rgb(217, 210, 210);
 }

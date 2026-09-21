@@ -10,5 +10,8 @@ export async function fetchApi(path, options={}){
         const body = await response.json().catch(() => ({}));//get error in body
         throw new Error(body.detail || response.statusText);
     }
+    if(response.status === 204){
+        return null;//delete sends back no body, so there is nothing to parse
+    }
     return response.json();//this is the success case
 }
