@@ -49,9 +49,12 @@ then every authenticated call comes back 401.
 ### Frontend (static site)
 
 - Root Directory: `frontend/react-quiz-app`
-- Build Command: `npm install && npm run build`
+- Build Command: `npm run render-build`
 - Publish Directory: `dist`
 - Rewrite rule: `/*` to `/index.html`
+
+The chained install lives in that npm script because render's build command field only
+accepts `[A-Za-z0-9-_./ ]`, which rules out `&&`.
 
 Set `VITE_API_URL` to the deployed backend url. Vite inlines it at build time rather than
 reading it at runtime, so it has to be set before the build runs -- adding it afterwards
