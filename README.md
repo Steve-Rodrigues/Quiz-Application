@@ -38,13 +38,14 @@ Environment:
 | --- | --- |
 | `DATABASE_URL` | the internal connection string for the postgres instance |
 | `SESSION_SECRET` | a long random string |
-| `ALLOWED_ORIGINS` | the deployed frontend's origin, comma separated if more than one |
-| `COOKIE_SAMESITE` | `none` |
-| `COOKIE_SECURE` | `true` |
+| `ALLOWED_ORIGINS` | optional -- comma separated frontend origins. the deployed one is already the default |
+| `COOKIE_SAMESITE` | optional -- defaults to `none` when it detects it's running on render |
+| `COOKIE_SECURE` | optional -- defaults to `true` when it detects it's running on render |
 
-The last two are required once the frontend is on a different origin than the api. A
-`SameSite=Lax` cookie is not sent on cross-site requests, so login appears to succeed and
-then every authenticated call comes back 401.
+Only `DATABASE_URL` and `SESSION_SECRET` have to be set. The cookie flags switch
+themselves on from render's own `RENDER` env var, because a cross-site `SameSite=Lax`
+cookie is dropped by the browser -- login looks like it works and then every
+authenticated call comes back 401. Set any of them explicitly to override.
 
 ### Frontend (static site)
 
