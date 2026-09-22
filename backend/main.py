@@ -14,10 +14,17 @@ from fastapi.middleware.cors import CORSMiddleware
 Base.metadata.create_all(bind=engine) #create the tables on startup
 
 app = FastAPI()
-app.add_middleware(SessionMiddleware, secret_key=settings.session_secret) #the session middleware to check the sessions using the secret comparing to signature passed thorugh the header
+#the session middleware to check the sessions using the secret comparing to signature passed thorugh the header.
+#same_site/https_only come from env because a deployed frontend is a cross-site caller
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=settings.session_secret,
+    same_site=settings.cookie_samesite,
+    https_only=settings.cookie_secure,
+)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=settings.origin_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
