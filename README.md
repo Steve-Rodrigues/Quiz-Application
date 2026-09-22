@@ -62,4 +62,6 @@ reading it at runtime, so it has to be set before the build runs -- adding it af
 does nothing until the next deploy.
 
 The rewrite rule is what makes shared quiz links and page refreshes work; without it the
-host looks for a file at `/take/<link>` and 404s.
+host looks for a file at `/take/<link>` and 404s. The build also drops a copy of
+index.html at 404.html as a fallback for hosts that serve it on a miss, but the rewrite
+is the real fix -- it returns 200 instead of a 404 status.
